@@ -1,6 +1,6 @@
 {
-  "name": "German Flashcards",
-  "short_name": "Flashcards",
+  "name": "German / Hebrew Flashcards",
+  "short_name": "GE/HE cards",
   "description": "German / Hebrew vocabulary flashcards",
   "start_url": "/flash-cards/",
   "scope": "/flash-cards/",
