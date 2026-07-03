@@ -5,12 +5,9 @@ A mobile-first PWA for learning German vocabulary with Hebrew translations. Inst
 🔗 **[Try it live](https://yonatan-n.github.io/flash-cards/)**
 
 ![Home screen](docs/screenshots/home.png)
-<!-- ![Learn — German question](docs/screenshots/learn_german.png) -->
 ![Learn — revealed](docs/screenshots/learn_german_reveal.png)
-<!-- ![Learn — Hebrew card](docs/screenshots/learn_hebrew.png) -->
 ![Test — question](docs/screenshots/test_hebrew.png)
 ![Test — correct](docs/screenshots/test_hebrew_correct.png)
-<!-- ![Test — wrong](docs/screenshots/test_hebrew_wrong.png) -->
 
 
 ## Features
