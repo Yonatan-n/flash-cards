@@ -2,7 +2,7 @@
 //  STRINGS — change this object to localise the UI
 // ─────────────────────────────────────────────
 const S = {
-  appTitle: 'German Flashcards',
+  appTitle: 'German / Hebrew Flashcards',
   practiceNew: 'Practice New Words',
   practiceOld: 'Practice Old Words',
   noOldWords: 'No mastered words yet — practice some new words first!',
@@ -20,14 +20,14 @@ const S = {
   correctAnswer: 'Correct answer:',
   testResult: (c, t) => `${c} / ${t} correct`,
   backToHome: 'Back to Home',
-  exportProgress:     'Export Progress',
-  importProgress:     'Import Progress',
+  exportProgress: 'Export Progress',
+  importProgress: 'Import Progress',
   progressImportDone: 'Progress imported!',
-  progressImportError:'Import failed — invalid file.',
-  exportWordlist:     'Export Word List',
-  importWordlist:     'Import Word List',
+  progressImportError: 'Import failed — invalid file.',
+  exportWordlist: 'Export Word List',
+  importWordlist: 'Import Word List',
   wordlistImportDone: 'Word list imported!',
-  wordlistImportError:'Import failed — expected a CSV with german,hebrew columns.',
+  wordlistImportError: 'Import failed — expected a CSV with german,hebrew columns.',
   summary: 'Summary',
   masteredBadge: '🎉 All correct!',
   german: 'German',
@@ -37,7 +37,7 @@ const S = {
 // ─────────────────────────────────────────────
 //  STORAGE
 // ─────────────────────────────────────────────
-const STORE_KEY    = 'de_he_flashcards_v1';
+const STORE_KEY = 'de_he_flashcards_v1';
 const WORDLIST_KEY = 'de_he_wordlist_v1';
 
 function loadStore() {
@@ -64,7 +64,7 @@ function parseWordlistCSV(text) {
   const lines = text.trim().split('\n').slice(1); // skip header
   return lines.map(line => {
     const m = line.match(/^"([^"]*?)","([^"]*?)"$/) ||
-              line.match(/^([^,]+),(.+)$/);
+      line.match(/^([^,]+),(.+)$/);
     if (!m) return null;
     return { german: m[1].trim(), hebrew: m[2].trim() };
   }).filter(Boolean);
@@ -92,6 +92,10 @@ function shuffle(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+function wordClass(hebrew) {
+  return (hebrew ? 'he ' : '') + 'text-3xl font-bold';
 }
 
 function normalise(s) {
@@ -222,7 +226,6 @@ function showLearnCard() {
   const qText = isHe ? word.hebrew : word.german;
   const aLang = isHe ? S.german : S.hebrew;
   const aText = isHe ? word.german : word.hebrew;
-  const aClass = isHe ? 'text-3xl font-bold' : 'he text-2xl font-semibold text-emerald-300';
 
   render(`
     <div class="flex flex-col flex-1 px-5 pt-10 pb-8 gap-5">
@@ -242,13 +245,13 @@ function showLearnCard() {
       <div id="card" class="flex-1 flex flex-col items-center justify-center rounded-3xl bg-indigo-900 shadow-xl px-8 py-10 gap-6 min-h-[280px] ${!isRevealed ? 'cursor-pointer active:scale-[0.98] transition-transform' : ''}">
         <div class="text-center">
           <p class="text-xs uppercase tracking-widest text-indigo-400 mb-2">${qLang}</p>
-          <p class="${isHe ? 'he text-2xl font-semibold text-emerald-300' : 'text-3xl font-bold leading-tight'}">${qText}</p>
+          <p class="${wordClass(isHe)}">${qText}</p>
         </div>
         ${isRevealed ? `
           <div class="w-16 h-px bg-indigo-700"></div>
           <div class="text-center">
             <p class="text-xs uppercase tracking-widest text-indigo-400 mb-2">${aLang}</p>
-            <p class="${aClass}">${aText}</p>
+            <p class="${wordClass(!isHe)}">${aText}</p>
           </div>
         ` : `
           <div id="card-hint" class="mt-4 text-indigo-500 text-sm">${S.tapToReveal}</div>
@@ -294,11 +297,11 @@ function revealCurrent() {
   const isHe = word.dir === 'he';
   const aLang = isHe ? S.german : S.hebrew;
   const aText = isHe ? word.german : word.hebrew;
-  const aClass = isHe ? 'text-3xl font-bold' : 'he text-2xl font-semibold text-emerald-300';
 
   // Update card in-place — no full re-render, so no flash
   const card = document.getElementById('card');
-  card.removeAttribute('onclick');
+  card.onclick = null; // remove JS-assigned handler
+  card.removeAttribute('onclick'); // remove any HTML attribute handler
   card.classList.remove('cursor-pointer', 'active:scale-[0.98]', 'transition-transform');
 
   const hint = document.getElementById('card-hint');
@@ -312,7 +315,7 @@ function revealCurrent() {
     <div class="w-16 h-px bg-indigo-700"></div>
     <div class="text-center">
       <p class="text-xs uppercase tracking-widest text-indigo-400 mb-2">${aLang}</p>
-      <p class="${aClass}">${aText}</p>
+      <p class="${wordClass(!isHe)}">${aText}</p>
     </div>
   `;
   card.appendChild(answerEl);
@@ -407,7 +410,7 @@ function showTestCard() {
 
       <div class="flex-1 flex flex-col items-center justify-center rounded-3xl bg-indigo-900 shadow-xl px-8 py-10 gap-4 min-h-[260px]">
         <p class="text-xs uppercase tracking-widest text-indigo-400">Translate to ${isHe ? S.german : S.hebrew}</p>
-        <p class="${isHe ? 'he text-2xl font-semibold text-emerald-300' : 'text-3xl font-bold text-center leading-tight'}">${qText}</p>
+        <p class="${isHe ? 'he' : ''} text-3xl font-bold text-center">${qText}</p>
       </div>
 
       <div class="flex flex-col gap-3">
@@ -466,6 +469,7 @@ function submitAnswer() {
   nextBtn.textContent = isLast ? S.summary : S.next;
   nextBtn.className = 'w-full py-4 rounded-2xl font-bold text-lg bg-indigo-500 active:bg-indigo-600 active:scale-95 transition-all';
   nextBtn.onclick = () => {
+    nextBtn.disabled = true;
     testIndex++;
     if (testIndex < testWords.length) {
       app.style.transition = 'opacity 0.2s ease';
@@ -593,7 +597,7 @@ function importWordlist(e) {
       ALL_WORDS = words;
       setImportMsg(S.wordlistImportDone);
       setTimeout(() => showHome(), 800);
-    } catch(err) {
+    } catch (err) {
       setImportMsg(S.wordlistImportError, true);
     }
   };
